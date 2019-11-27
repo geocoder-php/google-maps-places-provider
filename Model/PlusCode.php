@@ -31,7 +31,7 @@ class PlusCode
      * @param string $globalCode
      * @param string $compoundCode
      */
-    public function __construct(string $globalCode, string $compoundCode)
+    public function __construct(string $globalCode = null, string $compoundCode = null)
     {
         $this->globalCode = $globalCode;
         $this->compoundCode = $compoundCode;
@@ -40,7 +40,7 @@ class PlusCode
     /**
      * @return string
      */
-    public function getGlobalCode(): string
+    public function getGlobalCode(): ?string
     {
         return $this->globalCode;
     }
@@ -48,7 +48,7 @@ class PlusCode
     /**
      * @return string
      */
-    public function getCompoundCode(): string
+    public function getCompoundCode(): ?string
     {
         return $this->compoundCode;
     }

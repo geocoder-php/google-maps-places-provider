@@ -194,7 +194,7 @@ final class GooglePlace extends Address
     /**
      * @return PlusCode|null
      */
-    public function getPlusCode(): PlusCode
+    public function getPlusCode(): ?PlusCode
     {
         return $this->plusCode;
     }
@@ -210,7 +210,7 @@ final class GooglePlace extends Address
     /**
      * @return Photo[]|null
      */
-    public function getPhotos(): array
+    public function getPhotos(): ?array
     {
         return $this->photos;
     }
@@ -234,7 +234,7 @@ final class GooglePlace extends Address
      *
      * @return int|null
      */
-    public function getPriceLevel(): int
+    public function getPriceLevel(): ?int
     {
         return $this->priceLevel;
     }
@@ -250,7 +250,7 @@ final class GooglePlace extends Address
     /**
      * @return float|null
      */
-    public function getRating(): float
+    public function getRating(): ?float
     {
         return $this->rating;
     }
