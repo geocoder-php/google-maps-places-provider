@@ -1,4 +1,4 @@
-# Google Maps Geocoder provider
+# Google Places Geocoder provider
 [![Build Status](https://travis-ci.org/geocoder-php/google-maps-places-provider.svg?branch=master)](http://travis-ci.org/geocoder-php/google-maps-places-provider)
 [![Latest Stable Version](https://poser.pugx.org/geocoder-php/google-maps-places-provider/v/stable)](https://packagist.org/packages/geocoder-php/google-maps-places-provider)
 [![Total Downloads](https://poser.pugx.org/geocoder-php/google-maps-places-provider/downloads)](https://packagist.org/packages/geocoder-php/google-maps-places-provider)
@@ -7,7 +7,7 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/geocoder-php/google-maps-places-provider.svg?style=flat-square)](https://scrutinizer-ci.com/g/geocoder-php/google-maps-places-provider)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
-This is the Google Maps Places provider from the PHP Geocoder. This is a **READ ONLY** repository. See the
+This is the Google Places provider from the PHP Geocoder. This is a **READ ONLY** repository. See the
 [main repo](https://github.com/geocoder-php/Geocoder) for information and documentation. 
 
 ## Install
@@ -20,7 +20,8 @@ composer require geocoder-php/google-maps-places-provider
 https://developers.google.com/places/web-service
 
 ## Usage
-This provider often requires extra data when making queries, due to requirements of the underlying places API.
+
+This provider often requires extra data when making queries, due to requirements of the underlying Places API.
 
 ### Geocoding
 This provider supports two different modes of geocoding by text.
@@ -33,6 +34,24 @@ This mode will perform a search based on the input text.
 It's a lot more forgiving that the `find` mode, but results will contain all fields and thus be billed at the highest rate.
 
 ```php
+$results = $provider->geocodeQuery(
+    GeocodeQuery::create('bar in sydney')
+        ->withData('mode', GoogleMapsPlaces::GEOCODE_MODE_SEARCH)
+);
+```
+
+around location:
+
+```php
+$results = $provider->geocodeQuery(
+    GeocodeQuery::create('bar')
+        ->withData('mode', GoogleMapsPlaces::GEOCODE_MODE_SEARCH)
+        ->withData('location', '-32.926642, 151.783026')
+);
+```
+
+
+```php
 $findResults = $provider->geocodeQuery(GeocodeQuery::create('Museum of Contemporary Art Australia')); // One Result
 
 $searchResults = $provider->geocodeQuery(GeocodeQuery::create('art museum sydney'))
@@ -40,12 +59,48 @@ $searchResults = $provider->geocodeQuery(GeocodeQuery::create('art museum sydney
 ```
 
 ### Reverse Geocoding
-When reverse geocoding, you are required to supply either a `keyword`, `type` or `name`.
-See https://developers.google.com/places/web-service/search#PlaceSearchRequests
+
+Three options available for reverse geocoding of latlon coordinates:
+
+- mode `search` + type (e.g.) `bar`: uses Google Place API [Text search](https://developers.google.com/places/web-service/search#TextSearchRequests), requires `type` - note: is similar to search around location
+- mode `nearby` + rankby `distance`: uses Google Place API [Nearby search](https://developers.google.com/places/web-service/search#PlaceSearchRequests), requires `type/keyword/name`
+- mode `nearby` + rankby `prominence`: uses Google Place API [Nearby search](https://developers.google.com/places/web-service/search#PlaceSearchRequests), requires `radius`
+
+Defaults: mode `search`, rankby `prominence` (for mode `nearby`).
+Mode `search` gives formatted_address, mode `nearby` gives vicinity instead.  
+Similar but not the same. E.g.
+
+- `search`: "formatted_address": "7 Cope St, Redfern NSW 2016"
+- `nearby`: "vicinity": "7 Cope Street, Redfern"
+
+Examples
 
 ```php
-$results = $provider->reverseQuery(ReverseQuery::fromCoordinates(-33.892674, 151.200727)->withData('type', 'bar'));
+$results = $provider->reverseQuery(
+    ReverseQuery::fromCoordinates(-33.892674, 151.200727)
+        ->withData('mode', GoogleMapsPlaces::GEOCODE_MODE_NEARBY)
+        //->withData('rankby','prominence'); // =default
+        ->withData('radius', 500)
+    );
 ```
+
+```php
+$results = $provider->reverseQuery(
+    ReverseQuery::fromCoordinates(-33.892674, 151.200727)
+        // ->withData('mode', GoogleMapsPlaces::GEOCODE_MODE_SEARCH) // =default
+        ->withData('type', 'bar')
+    );
+```
+
+```php
+$results = $provider->reverseQuery(
+    ReverseQuery::fromCoordinates(-33.892674, 151.200727)
+        ->withData('mode', GoogleMapsPlaces::GEOCODE_MODE_NEARBY)
+        ->withData('rankby','distance');
+        ->withData('type', 'bar')
+    );
+```
+
 
 ### Contribute
 
