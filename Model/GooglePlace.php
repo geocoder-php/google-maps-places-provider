@@ -276,7 +276,7 @@ final class GooglePlace extends Address
     /**
      * @return float|null
      */
-    public function getRating(): float
+    public function getRating(): ?float
     {
         return $this->rating;
     }
